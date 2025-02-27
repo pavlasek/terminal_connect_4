@@ -1,11 +1,11 @@
 import os
 import platform
-import time
 import random
 
 class Connect4Game:
     game_grid = []
     cursor_position = 5
+    cursor_symbol = "$"
 
     def __init__(self):
         self.game_grid = [
@@ -15,15 +15,20 @@ class Connect4Game:
         [" ", " ", " ", " ", " ", " "],
         [" ", " ", " ", " ", " ", " "],
         [" ", " ", " ", " ", " ", " "]]
-
-
+        
     def playGame(self):
         end_of_the_game = False
         self.showStartingInfo()
-        self.showGrid()
+        self.showGrid(self.cursor_symbol)
         while end_of_the_game == False:
+            key = self.waitForInput()
+            self.move_cursor(key)
+
             continue
 
+    def waitForInput(self):
+        pass
+        
     def showStartingInfo(self):
         """Prints information at the start of the game. Prints instruction
         and how to play the game."""
@@ -52,9 +57,6 @@ class Connect4Game:
         else:
             os.system('clear')
 
-    def animateCursor(self):
-        pass
-
     def switchCursorLeft(self):
         pass
 
@@ -64,13 +66,13 @@ class Connect4Game:
     def placeStone(self):
         pass
 
-    def showGrid(self):
+    def showGrid(self, cursor_symbol):
         horizontal_size = len(self.game_grid[1]) * 2 + 1
         vertical_size = len(self.game_grid) + 2            
 
         for i in range(vertical_size):
             if i == 0:
-                self.printFirstLine(horizontal_size)
+                self.printFirstLine(horizontal_size, cursor_symbol)
             elif i == vertical_size - 1:
                 print("@" * (horizontal_size))
             else:
@@ -82,7 +84,7 @@ class Connect4Game:
                     else:
                         print(self.game_grid[grid_row][j] + "|", end="")
     
-    def printFirstLine(self, horizontal_size):
+    def printFirstLine(self, horizontal_size, cursor_symbol):
         cursor_i = 2 * self.cursor_position + 1
         for i in range(horizontal_size):
             if i == 0:
@@ -90,7 +92,7 @@ class Connect4Game:
             elif i == horizontal_size - 1:
                 print("@", end="\n")
             elif i == cursor_i:
-                print("$", end="")
+                print(cursor_symbol, end="")
             else:
                 print(" ", end="")
         
