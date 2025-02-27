@@ -5,7 +5,7 @@ import random
 
 class Connect4Game:
     game_grid = []
-    cursor_position = 0
+    cursor_position = 5
 
     def __init__(self):
         self.game_grid = [
@@ -18,7 +18,11 @@ class Connect4Game:
 
 
     def playGame(self):
-        self.showStartingInfo()        
+        end_of_the_game = False
+        self.showStartingInfo()
+        self.showGrid()
+        while end_of_the_game == False:
+            continue
 
     def showStartingInfo(self):
         """Prints information at the start of the game. Prints instruction
@@ -41,11 +45,6 @@ class Connect4Game:
     def showFinalInfo(self):
         pass
 
-    def showStartingGrid(self):
-        """Shows the starting grid and the cursor in the default position."""
-        
-        pass
-
     def clearTerminal(self):
         """Clears terminal based on which operating system the game is running."""
         if platform.system() == 'Windows':
@@ -66,9 +65,36 @@ class Connect4Game:
         pass
 
     def showGrid(self):
-        pass
-    
+        horizontal_size = len(self.game_grid[1]) * 2 + 1
+        vertical_size = len(self.game_grid) + 2            
 
+        for i in range(vertical_size):
+            if i == 0:
+                self.printFirstLine(horizontal_size)
+            elif i == vertical_size - 1:
+                print("@" * (horizontal_size))
+            else:
+                grid_row = i - 1
+                print("@", end="")
+                for j in range(len(self.game_grid[grid_row])):
+                    if j == len(self.game_grid[grid_row]) - 1:
+                        print(self.game_grid[grid_row][j] + "@", end="\n")
+                    else:
+                        print(self.game_grid[grid_row][j] + "|", end="")
+    
+    def printFirstLine(self, horizontal_size):
+        cursor_i = 2 * self.cursor_position + 1
+        for i in range(horizontal_size):
+            if i == 0:
+                print("@", end="")
+            elif i == horizontal_size - 1:
+                print("@", end="\n")
+            elif i == cursor_i:
+                print("$", end="")
+            else:
+                print(" ", end="")
+        
+        
 
 game = Connect4Game()
 game.playGame()
