@@ -1,19 +1,16 @@
 import os
 import platform
-import random
 import sys
 import tty
 import termios
-import time
-import select
-
 
 class Connect4Game:
     game_grid = []
     cursor_position = 5
-    cursor_symbol = "$"
     first_player = "X"
     second_player = "O"
+    cursor_symbol = first_player
+
 
     def __init__(self):
         self.game_grid = [
@@ -28,16 +25,53 @@ class Connect4Game:
         end_of_the_game = False
         self.showStartingInfo()
         self.showGrid(self.cursor_symbol)
-        while end_of_the_game == False:
-            key = self.waitForInput()
-            #self.game_move(key)
-            winning_player = self.checkWinner()
-            if winning_player == None:
-                continue
-            else:
-                end_of_the_game = True
-                self.showFinalInfo(winning_player)
+        current_player = self.first_player
 
+        while end_of_the_game == False:
+            
+            self.cursor_symbol = current_player
+
+            key = self.waitForInput()
+            if key in ['a', 'd', 'LEFT', 'RIGHT']:
+                self.gameMove(key)
+            elif key in ['s', 'DOWN']:
+
+                self.placeStone(current_player)
+
+                winning_player = self.checkWinner()
+                if winning_player == None:
+                    current_player = self.switchPlayer(current_player)
+                    continue
+                else:
+                    end_of_the_game = True
+                    self.showFinalInfo(winning_player)
+
+    def switchPlayer(self, current_player):
+        if current_player == "X":
+            current_player = "O"
+        elif current_player == "O":
+            current_player = "X"
+        return current_player
+
+    def gameMove(self, key):
+        match key:
+            case 'a':
+                self.switchCursorLeft()
+            case 'd':
+                self.switchCursorRight()
+            case 'LEFT':
+                self.switchCursorLeft()
+            case 'RIGHT':
+                self.switchCursorRight()
+
+    def placeStone(self, current_player):
+        self.clearTerminal()
+        current_player = self.switchPlayer(current_player)
+        self.cursor_symbol = current_player
+
+        self.showStartingInfo()
+        self.showGrid(self.cursor_symbol)
+    
     def waitForInput(self):
         key_pressed = False
         while key_pressed == False:
@@ -45,12 +79,10 @@ class Connect4Game:
             
             if key == None:
                 continue
-
-            print(f"You pressed: {key}")
-            if key == 'q':
+            elif key == 'q':
                 exit()
-
-
+            else:
+                return key
 
     def get_key(self):
         """Reads the key from the terminal."""
@@ -94,7 +126,7 @@ class Connect4Game:
         print("\n--------------------------------------------------------------------------------------------\n")
 
     def checkWinner(self):
-        pass
+        return None
 
     def showFinalInfo(self, winning_player):
         """Prints information at the end of the game."""
@@ -117,13 +149,16 @@ class Connect4Game:
             os.system('clear')
 
     def switchCursorLeft(self):
-        pass
+        self.cursor_position = max(0, self.cursor_position - 1)
+        self.clearTerminal()
+        self.showStartingInfo()
+        self.showGrid(self.cursor_symbol)
 
     def switchCursorRight(self):
-        pass
-
-    def placeStone(self):
-        pass
+        self.cursor_position = min(self.cursor_position + 1, len(self.game_grid[0]) - 1)
+        self.clearTerminal()
+        self.showStartingInfo()
+        self.showGrid(self.cursor_symbol)
 
     def showGrid(self, cursor_symbol):
         horizontal_size = len(self.game_grid[1]) * 2 + 1
