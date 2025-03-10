@@ -6,7 +6,7 @@ import termios
 
 class Connect4Game:
     game_grid = []
-    cursor_position = 5
+    cursor_position = 0
     first_player = "X"
     second_player = "O"
     cursor_symbol = first_player
@@ -31,21 +31,33 @@ class Connect4Game:
             
             self.cursor_symbol = current_player
 
-            key = self.waitForInput()
-            if key in ['a', 'd', 'LEFT', 'RIGHT']:
-                self.gameMove(key)
-            elif key in ['s', 'DOWN']:
+            while True:
+                key = self.waitForInput()
+                if key in ['a', 'd', 'LEFT', 'RIGHT']:
+                    self.gameMove(key)
+                elif key in ['s', 'DOWN']:
 
-                self.placeStone(current_player)
+                    valid_stone_move = self.placeStone(current_player)
+                    if valid_stone_move == True:
+                        self.showStartingInfo()
+                        current_player = self.switchPlayer(current_player)
+                        self.cursor_symbol = current_player
+                        self.showGrid(self.cursor_symbol)
+                        break
+                    else:
+                        self.showStartingInfo()
+                        self.showGrid(self.cursor_symbol)
 
-                winning_player = self.checkWinner()
-                if winning_player == None:
-                    current_player = self.switchPlayer(current_player)
-                    continue
-                else:
-                    end_of_the_game = True
-                    self.showFinalInfo(winning_player)
 
+            winning_player = self.checkWinner()
+            if winning_player == None:
+                continue
+            else:
+                end_of_the_game = True
+                self.showFinalInfo(winning_player)
+                break
+
+            
     def switchPlayer(self, current_player):
         if current_player == "X":
             current_player = "O"
@@ -66,12 +78,24 @@ class Connect4Game:
 
     def placeStone(self, current_player):
         self.clearTerminal()
-        current_player = self.switchPlayer(current_player)
         self.cursor_symbol = current_player
 
-        self.showStartingInfo()
-        self.showGrid(self.cursor_symbol)
+        if self.game_grid[0][self.cursor_position] == ' ':
+            self.placeStoneToCol(self.cursor_position, current_player)
+            return True
+        else:
+            return False
+
+
+        
     
+    def placeStoneToCol(self, cursor_position, current_player):
+        for i in range(len(self.game_grid)):
+            if self.game_grid[len(self.game_grid) - 1 - i][cursor_position] == ' ':
+                self.game_grid[len(self.game_grid) - 1 - i][cursor_position] = current_player
+                break
+
+
     def waitForInput(self):
         key_pressed = False
         while key_pressed == False:
@@ -126,17 +150,45 @@ class Connect4Game:
         print("\n--------------------------------------------------------------------------------------------\n")
 
     def checkWinner(self):
-        return None
+        #check colums
+        for i in range(len(self.game_grid[0])):
+            winning_symbol = ' '
+            counter = 0
+            for j in range(len(self.game_grid)):
+                if j == 0:
+                    if ((self.game_grid[len(self.game_grid) - j - 1][i] == ' ')):
+                        break
+                    else:
+                        winning_symbol = self.game_grid[len(self.game_grid) - j - 1][i]
+                        counter = 1
+                else:
+                    if self.game_grid[len(self.game_grid) - j - 1][i] == winning_symbol:
+                        counter += 1
+                    else:
+                        winning_symbol = self.game_grid[len(self.game_grid) - j - 1][i]
+                        if winning_symbol == ' ':
+                            counter = 0
+                            break
+                        else:
+                            counter = 1
+
+                if counter == 4:
+                    print("winning symbolis:" + winning_symbol + str(j) + str(i))
+                    return winning_symbol
+
+                
+                
+                
 
     def showFinalInfo(self, winning_player):
         """Prints information at the end of the game."""
         if winning_player == 0:
             print("--------------------------------------------------------------------------------------------")
             print("IT IS A DRAW!")
-        elif winning_player == 1:
+        elif winning_player == 'X':
             print("--------------------------------------------------------------------------------------------")
             print("PLAYER1 WINS!")
-        elif(winning_player == 2):
+        elif(winning_player == 'O'):
             print("--------------------------------------------------------------------------------------------")
             print("PLAYER2 WINS!")
         
