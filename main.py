@@ -173,9 +173,22 @@ class Connect4Game:
                             counter = 1
 
                 if counter == 4:
-                    print("winning symbolis:" + winning_symbol + str(j) + str(i))
                     return winning_symbol
+        
+        #check rows
+        for i in range(len(self.game_grid)):
+            winning_symbol = ' '
+            counter = 0
+            for j in range(len(self.game_grid[i])):
+                
+                if winning_symbol == self.game_grid[i][j]:
+                    counter += 1
+                else:
+                    winning_symbol = self.game_grid[i][j]
+                    counter = 1
 
+                if counter == 4 and (winning_symbol == 'X' or winning_symbol == 'O'):
+                    return winning_symbol
                 
                 
                 
